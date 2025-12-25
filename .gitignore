@@ -1,0 +1,15 @@
+# Python
+__pycache__/
+*.pyc
+venv/
+
+# ML models (VERY IMPORTANT)
+*.h5
+*.keras
+
+# Uploads & results
+uploads/
+results/
+
+# OS
+.DS_Store

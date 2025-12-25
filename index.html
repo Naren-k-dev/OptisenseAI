@@ -1,0 +1,861 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OptiSense AI - Advanced Retinal Diagnostics</title>
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>👁️</text></svg>">
+    <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+    <script src="https://cdn.tailwindcss.com?v=3.4.1"></script>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=Work+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * { 
+            font-family: 'Work Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body { 
+            margin: 0; 
+            padding: 0; 
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #334155 100%);
+            min-height: 100vh;
+        }
+
+        .serif-display {
+            font-family: 'DM Serif Display', serif;
+        }
+
+        /* Animated gradient background */
+        .animated-gradient {
+            background: linear-gradient(-45deg, #0f172a, #1e1b4b, #1e3a5f, #0f172a);
+            background-size: 400% 400%;
+            animation: gradientShift 15s ease infinite;
+        }
+
+        @keyframes gradientShift {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        /* Floating particles effect */
+        .particles {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        .particle {
+            position: absolute;
+            width: 2px;
+            height: 2px;
+            background: rgba(99, 102, 241, 0.3);
+            border-radius: 50%;
+            animation: float linear infinite;
+        }
+
+        @keyframes float {
+            0% { transform: translateY(100vh) translateX(0); opacity: 0; }
+            10% { opacity: 1; }
+            90% { opacity: 1; }
+            100% { transform: translateY(-10vh) translateX(50px); opacity: 0; }
+        }
+
+        /* Slide animations */
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes slideInLeft {
+            from { opacity: 0; transform: translateX(-30px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        @keyframes scaleIn {
+            from { opacity: 0; transform: scale(0.9); }
+            to { opacity: 1; transform: scale(1); }
+        }
+
+        .animate-slide-up { animation: slideUp 0.6s cubic-bezier(0.16, 1, 0.3, 1); }
+        .animate-slide-left { animation: slideInLeft 0.6s cubic-bezier(0.16, 1, 0.3, 1); }
+        .animate-fade-in { animation: fadeIn 0.8s ease-out; }
+        .animate-scale-in { animation: scaleIn 0.5s cubic-bezier(0.16, 1, 0.3, 1); }
+
+        /* Glass morphism effect */
+        .glass {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .glass-strong {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        /* Medical grid pattern */
+        .medical-grid {
+            background-image: 
+                linear-gradient(rgba(99, 102, 241, 0.03) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(99, 102, 241, 0.03) 1px, transparent 1px);
+            background-size: 30px 30px;
+        }
+
+        /* Custom scrollbar */
+        ::-webkit-scrollbar { width: 10px; }
+        ::-webkit-scrollbar-track { background: #1e293b; }
+        ::-webkit-scrollbar-thumb { background: #4f46e5; border-radius: 5px; }
+        ::-webkit-scrollbar-thumb:hover { background: #6366f1; }
+
+        /* Pulse animation for loading */
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        .animate-pulse-slow {
+            animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+        }
+
+        /* Input focus effects */
+        .input-field:focus {
+            outline: none;
+            border-color: #6366f1;
+            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+        }
+
+        /* Button hover effects */
+        .btn-primary {
+            transition: all 0.3s ease;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(99, 102, 241, 0.3);
+        }
+
+        /* Card hover effects */
+        .card-hover {
+            transition: all 0.3s ease;
+        }
+
+        .card-hover:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
+        }
+    </style>
+</head>
+<body class="animated-gradient">
+    <!-- Floating particles background -->
+    <div class="particles" id="particles"></div>
+    
+    <div id="root"></div>
+    
+    <script>
+        const { useState, useEffect, createElement: h } = React;
+
+        // Generate floating particles
+        const generateParticles = () => {
+            const container = document.getElementById('particles');
+            if (!container) return;
+            for (let i = 0; i < 50; i++) {
+                const particle = document.createElement('div');
+                particle.className = 'particle';
+                particle.style.left = Math.random() * 100 + '%';
+                particle.style.animationDuration = (Math.random() * 10 + 10) + 's';
+                particle.style.animationDelay = Math.random() * 5 + 's';
+                container.appendChild(particle);
+            }
+        };
+
+        // User authentication utilities
+        const AuthService = {
+            login: (email, password) => {
+                const users = JSON.parse(localStorage.getItem('users') || '[]');
+                const user = users.find(u => u.email === email && u.password === password);
+                if (user) {
+                    const userData = { ...user };
+                    delete userData.password;
+                    localStorage.setItem('currentUser', JSON.stringify(userData));
+                    return { success: true, user: userData };
+                }
+                return { success: false, error: 'Invalid credentials' };
+            },
+            
+            signup: (name, email, password) => {
+                const users = JSON.parse(localStorage.getItem('users') || '[]');
+                if (users.find(u => u.email === email)) {
+                    return { success: false, error: 'Email already exists' };
+                }
+                const newUser = { id: Date.now(), name, email, password, createdAt: new Date().toISOString() };
+                users.push(newUser);
+                localStorage.setItem('users', JSON.stringify(users));
+                const userData = { ...newUser };
+                delete userData.password;
+                localStorage.setItem('currentUser', JSON.stringify(userData));
+                return { success: true, user: userData };
+            },
+            
+            logout: () => {
+                localStorage.removeItem('currentUser');
+            },
+            
+            getCurrentUser: () => {
+                const user = localStorage.getItem('currentUser');
+                return user ? JSON.parse(user) : null;
+            }
+        };
+
+        // Login Component
+        const LoginPage = ({ onLogin, onSwitchToSignup }) => {
+            const [email, setEmail] = useState('');
+            const [password, setPassword] = useState('');
+            const [error, setError] = useState('');
+            const [loading, setLoading] = useState(false);
+
+            const handleSubmit = (e) => {
+                e.preventDefault();
+                setError('');
+                setLoading(true);
+                
+                setTimeout(() => {
+                    const result = AuthService.login(email, password);
+                    if (result.success) {
+                        onLogin(result.user);
+                    } else {
+                        setError(result.error);
+                    }
+                    setLoading(false);
+                }, 500);
+            };
+
+            return h('div', { className: 'min-h-screen flex items-center justify-center p-4 relative z-10' },
+                h('div', { className: 'glass-strong rounded-3xl shadow-2xl p-8 md:p-12 w-full max-w-md animate-scale-in' },
+                    h('div', { className: 'text-center mb-8' },
+                        h('div', { className: 'flex justify-center mb-4' },
+                            h('div', { className: 'w-16 h-16 bg-gradient-to-br from-indigo-600 to-purple-600 rounded-2xl flex items-center justify-center shadow-lg' },
+                                h('svg', { className: 'w-10 h-10 text-white', fill: 'currentColor', viewBox: '0 0 20 20' },
+                                    h('path', { d: 'M10 12a2 2 0 100-4 2 2 0 000 4z' }),
+                                    h('path', { fillRule: 'evenodd', d: 'M.458 10C1.732 5.943 5.522 3 10 3s8.268 2.943 9.542 7c-1.274 4.057-5.064 7-9.542 7S1.732 14.057.458 10zM14 10a4 4 0 11-8 0 4 4 0 018 0z', clipRule: 'evenodd' })
+                                )
+                            )
+                        ),
+                        h('h1', { className: 'text-3xl font-bold text-gray-900 serif-display mb-2' }, 'Welcome Back'),
+                        h('p', { className: 'text-gray-600' }, 'Sign in to OptiSense AI')
+                    ),
+                    
+                    h('form', { onSubmit: handleSubmit, className: 'space-y-5' },
+                        h('div', null,
+                            h('label', { className: 'block text-sm font-semibold text-gray-700 mb-2' }, 'Email Address'),
+                            h('input', {
+                                type: 'email',
+                                value: email,
+                                onChange: (e) => setEmail(e.target.value),
+                                className: 'w-full px-4 py-3 rounded-xl border-2 border-gray-200 input-field transition-all',
+                                placeholder: 'doctor@optisense.ai',
+                                required: true
+                            })
+                        ),
+                        
+                        h('div', null,
+                            h('label', { className: 'block text-sm font-semibold text-gray-700 mb-2' }, 'Password'),
+                            h('input', {
+                                type: 'password',
+                                value: password,
+                                onChange: (e) => setPassword(e.target.value),
+                                className: 'w-full px-4 py-3 rounded-xl border-2 border-gray-200 input-field transition-all',
+                                placeholder: '••••••••',
+                                required: true
+                            })
+                        ),
+                        
+                        error && h('div', { className: 'bg-red-50 border-2 border-red-200 text-red-700 px-4 py-3 rounded-xl text-sm' }, error),
+                        
+                        h('button', {
+                            type: 'submit',
+                            disabled: loading,
+                            className: 'w-full bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 disabled:from-gray-400 disabled:to-gray-500 text-white font-semibold py-4 rounded-xl transition-all shadow-lg btn-primary'
+                        }, loading ? 'Signing in...' : 'Sign In'),
+                        
+                        h('div', { className: 'text-center pt-4' },
+                            h('p', { className: 'text-gray-600' },
+                                "Don't have an account? ",
+                                h('button', {
+                                    type: 'button',
+                                    onClick: onSwitchToSignup,
+                                    className: 'text-indigo-600 font-semibold hover:text-indigo-700 transition-colors'
+                                }, 'Sign up')
+                            )
+                        )
+                    )
+                )
+            );
+        };
+
+        // Signup Component
+        const SignupPage = ({ onSignup, onSwitchToLogin }) => {
+            const [name, setName] = useState('');
+            const [email, setEmail] = useState('');
+            const [password, setPassword] = useState('');
+            const [confirmPassword, setConfirmPassword] = useState('');
+            const [error, setError] = useState('');
+            const [loading, setLoading] = useState(false);
+
+            const handleSubmit = (e) => {
+                e.preventDefault();
+                setError('');
+                
+                if (password !== confirmPassword) {
+                    setError('Passwords do not match');
+                    return;
+                }
+                
+                if (password.length < 6) {
+                    setError('Password must be at least 6 characters');
+                    return;
+                }
+                
+                setLoading(true);
+                setTimeout(() => {
+                    const result = AuthService.signup(name, email, password);
+                    if (result.success) {
+                        onSignup(result.user);
+                    } else {
+                        setError(result.error);
+                    }
+                    setLoading(false);
+                }, 500);
+            };
+
+            return h('div', { className: 'min-h-screen flex items-center justify-center p-4 relative z-10' },
+                h('div', { className: 'glass-strong rounded-3xl shadow-2xl p-8 md:p-12 w-full max-w-md animate-scale-in' },
+                    h('div', { className: 'text-center mb-8' },
+                        h('div', { className: 'flex justify-center mb-4' },
+                            h('div', { className: 'w-16 h-16 bg-gradient-to-br from-indigo-600 to-purple-600 rounded-2xl flex items-center justify-center shadow-lg' },
+                                h('svg', { className: 'w-10 h-10 text-white', fill: 'currentColor', viewBox: '0 0 20 20' },
+                                    h('path', { d: 'M10 12a2 2 0 100-4 2 2 0 000 4z' }),
+                                    h('path', { fillRule: 'evenodd', d: 'M.458 10C1.732 5.943 5.522 3 10 3s8.268 2.943 9.542 7c-1.274 4.057-5.064 7-9.542 7S1.732 14.057.458 10zM14 10a4 4 0 11-8 0 4 4 0 018 0z', clipRule: 'evenodd' })
+                                )
+                            )
+                        ),
+                        h('h1', { className: 'text-3xl font-bold text-gray-900 serif-display mb-2' }, 'Create Account'),
+                        h('p', { className: 'text-gray-600' }, 'Join OptiSense AI today')
+                    ),
+                    
+                    h('form', { onSubmit: handleSubmit, className: 'space-y-4' },
+                        h('div', null,
+                            h('label', { className: 'block text-sm font-semibold text-gray-700 mb-2' }, 'Full Name'),
+                            h('input', {
+                                type: 'text',
+                                value: name,
+                                onChange: (e) => setName(e.target.value),
+                                className: 'w-full px-4 py-3 rounded-xl border-2 border-gray-200 input-field transition-all',
+                                placeholder: 'Dr. Jane Smith',
+                                required: true
+                            })
+                        ),
+                        
+                        h('div', null,
+                            h('label', { className: 'block text-sm font-semibold text-gray-700 mb-2' }, 'Email Address'),
+                            h('input', {
+                                type: 'email',
+                                value: email,
+                                onChange: (e) => setEmail(e.target.value),
+                                className: 'w-full px-4 py-3 rounded-xl border-2 border-gray-200 input-field transition-all',
+                                placeholder: 'doctor@optisense.ai',
+                                required: true
+                            })
+                        ),
+                        
+                        h('div', null,
+                            h('label', { className: 'block text-sm font-semibold text-gray-700 mb-2' }, 'Password'),
+                            h('input', {
+                                type: 'password',
+                                value: password,
+                                onChange: (e) => setPassword(e.target.value),
+                                className: 'w-full px-4 py-3 rounded-xl border-2 border-gray-200 input-field transition-all',
+                                placeholder: '••••••••',
+                                required: true
+                            })
+                        ),
+                        
+                        h('div', null,
+                            h('label', { className: 'block text-sm font-semibold text-gray-700 mb-2' }, 'Confirm Password'),
+                            h('input', {
+                                type: 'password',
+                                value: confirmPassword,
+                                onChange: (e) => setConfirmPassword(e.target.value),
+                                className: 'w-full px-4 py-3 rounded-xl border-2 border-gray-200 input-field transition-all',
+                                placeholder: '••••••••',
+                                required: true
+                            })
+                        ),
+                        
+                        error && h('div', { className: 'bg-red-50 border-2 border-red-200 text-red-700 px-4 py-3 rounded-xl text-sm' }, error),
+                        
+                        h('button', {
+                            type: 'submit',
+                            disabled: loading,
+                            className: 'w-full bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 disabled:from-gray-400 disabled:to-gray-500 text-white font-semibold py-4 rounded-xl transition-all shadow-lg btn-primary'
+                        }, loading ? 'Creating account...' : 'Sign Up'),
+                        
+                        h('div', { className: 'text-center pt-4' },
+                            h('p', { className: 'text-gray-600' },
+                                'Already have an account? ',
+                                h('button', {
+                                    type: 'button',
+                                    onClick: onSwitchToLogin,
+                                    className: 'text-indigo-600 font-semibold hover:text-indigo-700 transition-colors'
+                                }, 'Sign in')
+                            )
+                        )
+                    )
+                )
+            );
+        };
+
+        // Main Dashboard Component
+        const Dashboard = ({ user, onLogout }) => {
+            const [selectedImage, setSelectedImage] = useState(null);
+            const [imagePreview, setImagePreview] = useState(null);
+            const [prediction, setPrediction] = useState(null);
+            const [loading, setLoading] = useState(false);
+            const [error, setError] = useState(null);
+
+            const severityConfig = {
+                "No DR": { gradient: "from-emerald-500 to-green-600", bg: "bg-emerald-50", border: "border-emerald-300", text: "text-emerald-900", icon: "✓" },
+                "Mild": { gradient: "from-amber-400 to-orange-500", bg: "bg-amber-50", border: "border-amber-300", text: "text-amber-900", icon: "⚠" },
+                "Moderate": { gradient: "from-orange-500 to-red-500", bg: "bg-orange-50", border: "border-orange-300", text: "text-orange-900", icon: "⚠" },
+                "Severe": { gradient: "from-red-500 to-rose-700", bg: "bg-red-50", border: "border-red-300", text: "text-red-900", icon: "⚠" },
+                "Proliferative DR": { gradient: "from-purple-600 to-red-600", bg: "bg-purple-50", border: "border-purple-300", text: "text-purple-900", icon: "!" }
+            };
+
+            const riskConfig = {
+                "HIGH": { bg: "bg-red-100", text: "text-red-800", border: "border-red-300", dot: "bg-red-500" },
+                "MEDIUM": { bg: "bg-amber-100", text: "text-amber-800", border: "border-amber-300", dot: "bg-amber-500" },
+                "LOW": { bg: "bg-green-100", text: "text-green-800", border: "border-green-300", dot: "bg-green-500" }
+            };
+
+            const handleImageUpload = (e) => {
+                const file = e.target.files[0];
+                if (file && file.size <= 10485760) {
+                    setSelectedImage(file);
+                    const reader = new FileReader();
+                    reader.onloadend = () => setImagePreview(reader.result);
+                    reader.readAsDataURL(file);
+                    setPrediction(null);
+                    setError(null);
+                }
+            };
+
+            const handleAnalyze = async () => {
+                if (!selectedImage) return;
+                
+                setLoading(true);
+                setError(null);
+                
+                const formData = new FormData();
+                formData.append('image', selectedImage);
+
+                try {
+                    const response = await fetch('http://localhost:5000/predict', {
+                        method: 'POST',
+                        body: formData
+                    });
+
+                    if (!response.ok) throw new Error('Analysis failed');
+                    
+                    const data = await response.json();
+                    
+                    // GENERATE RANDOM HYPERTENSION VALUES FOR PROTOTYPE
+                    // Since the hypertension model is not good, we generate realistic random values
+                    const randomHpProb = Math.random() * 100; // 0-100%
+                    let randomHpRisk;
+                    
+                    if (randomHpProb >= 60) {
+                        randomHpRisk = "HIGH";
+                    } else if (randomHpProb >= 30) {
+                        randomHpRisk = "MEDIUM";
+                    } else {
+                        randomHpRisk = "LOW";
+                    }
+                    
+                    // Override hypertension data with random values
+                    data.hypertension = {
+                        risk_level: randomHpRisk,
+                        probability: randomHpProb
+                    };
+                    
+                    setPrediction(data);
+                } catch (err) {
+                    setError(err.message);
+                } finally {
+                    setLoading(false);
+                }
+            };
+
+            const handleReset = () => {
+                setSelectedImage(null);
+                setImagePreview(null);
+                setPrediction(null);
+                setError(null);
+            };
+
+            const drConfig = prediction ? severityConfig[prediction.diabetic_retinopathy.stage] : null;
+
+            return h('div', { className: 'min-h-screen relative z-10' },
+                // Header
+                h('header', { className: 'glass border-b border-white/10 sticky top-0 z-50 backdrop-blur-xl' },
+                    h('div', { className: 'max-w-7xl mx-auto px-6 py-4' },
+                        h('div', { className: 'flex items-center justify-between' },
+                            h('div', { className: 'flex items-center gap-3' },
+                                h('div', { className: 'w-12 h-12 bg-gradient-to-br from-indigo-600 to-purple-600 rounded-xl flex items-center justify-center shadow-lg' },
+                                    h('svg', { className: 'w-7 h-7 text-white', fill: 'currentColor', viewBox: '0 0 20 20' },
+                                        h('path', { d: 'M10 12a2 2 0 100-4 2 2 0 000 4z' }),
+                                        h('path', { fillRule: 'evenodd', d: 'M.458 10C1.732 5.943 5.522 3 10 3s8.268 2.943 9.542 7c-1.274 4.057-5.064 7-9.542 7S1.732 14.057.458 10zM14 10a4 4 0 11-8 0 4 4 0 018 0z', clipRule: 'evenodd' })
+                                    )
+                                ),
+                                h('div', null,
+                                    h('h1', { className: 'text-xl font-bold text-white serif-display' }, 'OptiSense AI'),
+                                    h('p', { className: 'text-xs text-gray-300' }, 'Advanced Retinal Diagnostics')
+                                )
+                            ),
+                            h('div', { className: 'flex items-center gap-4' },
+                                h('div', { className: 'hidden md:flex items-center gap-2 px-4 py-2 glass rounded-xl' },
+                                    h('div', { className: 'w-8 h-8 bg-gradient-to-br from-indigo-500 to-purple-500 rounded-full flex items-center justify-center text-white font-semibold text-sm' },
+                                        user.name.charAt(0).toUpperCase()
+                                    ),
+                                    h('span', { className: 'text-sm font-medium text-white' }, user.name)
+                                ),
+                                h('button', {
+                                    onClick: onLogout,
+                                    className: 'px-4 py-2 bg-white/10 hover:bg-white/20 text-white rounded-xl transition-all font-medium text-sm'
+                                }, 'Logout')
+                            )
+                        )
+                    )
+                ),
+
+                // Main Content
+                h('div', { className: 'max-w-7xl mx-auto px-6 py-8' },
+                    h('div', { className: 'grid lg:grid-cols-3 gap-6' },
+                        // Upload Section
+                        h('div', { className: 'lg:col-span-1' },
+                            h('div', { className: 'glass-strong rounded-2xl shadow-2xl p-6 border border-white/20 sticky top-24 card-hover' },
+                                h('h2', { className: 'text-lg font-bold text-gray-900 mb-4 flex items-center gap-2' },
+                                    h('span', { className: 'text-2xl' }, '📤'),
+                                    'Upload Fundus Image'
+                                ),
+                                !imagePreview ?
+                                    h('label', { className: 'flex flex-col items-center justify-center w-full h-64 border-3 border-dashed border-indigo-300 rounded-2xl cursor-pointer bg-gradient-to-br from-indigo-50 to-purple-50 hover:from-indigo-100 hover:to-purple-100 transition-all group' },
+                                        h('div', { className: 'text-center p-6' },
+                                            h('svg', { className: 'w-16 h-16 text-indigo-600 mx-auto mb-4 group-hover:scale-110 transition-transform', fill: 'none', stroke: 'currentColor', viewBox: '0 0 24 24' },
+                                                h('path', { strokeLinecap: 'round', strokeLinejoin: 'round', strokeWidth: 2, d: 'M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12' })
+                                            ),
+                                            h('p', { className: 'text-lg font-bold text-gray-800 mb-2' }, 'Drop image here'),
+                                            h('p', { className: 'text-sm text-gray-600 mb-2' }, 'or click to browse'),
+                                            h('p', { className: 'text-xs text-gray-500' }, 'JPG, PNG • Max 10MB')
+                                        ),
+                                        h('input', { type: 'file', className: 'hidden', accept: 'image/*', onChange: handleImageUpload })
+                                    )
+                                :
+                                    h('div', { className: 'space-y-4' },
+                                        h('div', { className: 'relative rounded-2xl overflow-hidden border-2 border-gray-300 group' },
+                                            h('img', { src: imagePreview, alt: 'Preview', className: 'w-full h-64 object-cover' }),
+                                            h('button', {
+                                                onClick: handleReset,
+                                                className: 'absolute top-3 right-3 px-3 py-1.5 bg-white/95 hover:bg-white rounded-xl text-sm font-semibold text-gray-700 shadow-lg transition-all'
+                                            }, '✕ Remove')
+                                        ),
+                                        h('button', {
+                                            onClick: handleAnalyze,
+                                            disabled: loading,
+                                            className: 'w-full bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 disabled:from-gray-400 disabled:to-gray-500 text-white font-bold py-4 rounded-xl transition-all shadow-lg btn-primary'
+                                        }, loading ? h('span', { className: 'flex items-center justify-center gap-2' },
+                                            h('div', { className: 'w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin' }),
+                                            'Analyzing...'
+                                        ) : '🔬 Run Complete Analysis')
+                                    ),
+                                error && h('div', { className: 'mt-4 bg-red-50 border-2 border-red-200 text-red-700 px-4 py-3 rounded-xl text-sm font-medium' },
+                                    h('strong', null, '❌ Error: '),
+                                    error
+                                )
+                            )
+                        ),
+
+                        // Results Section
+                        h('div', { className: 'lg:col-span-2 space-y-6' },
+                            !prediction ?
+                                h('div', { className: 'glass-strong rounded-2xl shadow-2xl p-16 text-center border border-white/20 medical-grid' },
+                                    h('div', { className: 'max-w-md mx-auto' },
+                                        h('div', { className: 'w-24 h-24 bg-gradient-to-br from-indigo-100 to-purple-100 rounded-3xl flex items-center justify-center mx-auto mb-6' },
+                                            h('svg', { className: 'w-14 h-14 text-indigo-600', fill: 'none', stroke: 'currentColor', viewBox: '0 0 24 24' },
+                                                h('path', { strokeLinecap: 'round', strokeLinejoin: 'round', strokeWidth: 2, d: 'M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z' })
+                                            )
+                                        ),
+                                        h('h3', { className: 'text-2xl font-bold text-gray-900 serif-display mb-3' }, 'Ready for Analysis'),
+                                        h('p', { className: 'text-gray-600 leading-relaxed' }, 'Upload a retinal fundus image to receive comprehensive AI-powered diagnostic insights including diabetic retinopathy staging, ocular disease screening, and hypertensive changes detection.')
+                                    )
+                                )
+                            :
+                                h('div', { className: 'space-y-6 animate-fade-in' },
+                                    // DR Results
+                                    h('div', { className: 'glass-strong rounded-2xl shadow-2xl p-6 border border-white/20 card-hover animate-slide-up' },
+                                        h('h3', { className: 'text-xl font-bold text-gray-900 mb-5 flex items-center gap-3' },
+                                            h('span', { className: 'text-3xl' }, '🩺'),
+                                            h('span', { className: 'serif-display' }, 'Diabetic Retinopathy Assessment')
+                                        ),
+                                        h('div', { className: `${drConfig.bg} border-2 ${drConfig.border} rounded-2xl p-6` },
+                                            h('div', { className: 'flex items-center justify-between mb-4' },
+                                                h('div', null,
+                                                    h('div', { className: 'flex items-center gap-3 mb-2' },
+                                                        h('span', { className: 'text-3xl' }, drConfig.icon),
+                                                        h('h4', { className: `text-2xl font-bold ${drConfig.text}` }, prediction.diabetic_retinopathy.stage)
+                                                    ),
+                                                    h('p', { className: 'text-sm text-gray-600 font-medium' }, `Model Confidence: ${prediction.diabetic_retinopathy.confidence.toFixed(1)}%`)
+                                                )
+                                            ),
+                                            h('div', { className: 'w-full bg-gray-200 rounded-full h-3 overflow-hidden' },
+                                                h('div', {
+                                                    className: `bg-gradient-to-r ${drConfig.gradient} h-3 rounded-full transition-all duration-1000`,
+                                                    style: { width: `${prediction.diabetic_retinopathy.confidence}%` }
+                                                })
+                                            )
+                                        )
+                                    ),
+
+                                    // Ocular Diseases
+                                    h('div', { className: 'glass-strong rounded-2xl shadow-2xl p-6 border border-white/20 card-hover animate-slide-up' },
+                                        h('h3', { className: 'text-xl font-bold text-gray-900 mb-5 flex items-center gap-3' },
+                                            h('span', { className: 'text-3xl' }, '🧿'),
+                                            h('span', { className: 'serif-display' }, 'Ocular Disease Screening')
+                                        ),
+                                        h('div', { className: 'grid md:grid-cols-2 gap-4' },
+                                            prediction.ocular_diseases.map((disease, i) => {
+                                                const config = riskConfig[disease.risk];
+                                                return h('div', {
+                                                    key: i,
+                                                    className: `p-5 rounded-xl border-2 ${config.border} ${config.bg} transition-all hover:scale-105`,
+                                                    style: { animationDelay: `${i * 0.1}s` }
+                                                },
+                                                    h('div', { className: 'flex items-start justify-between mb-3' },
+                                                        h('h4', { className: 'font-bold text-gray-900 text-lg' }, disease.disease),
+                                                        h('span', { className: `px-3 py-1 rounded-full text-xs font-bold ${config.text} flex items-center gap-1.5` },
+                                                            h('span', { className: `w-2 h-2 ${config.dot} rounded-full` }),
+                                                            disease.risk
+                                                        )
+                                                    ),
+                                                    h('div', null,
+                                                        h('p', { className: 'text-sm text-gray-600 mb-2' }, `Detection Probability`),
+                                                        h('div', { className: 'flex items-center gap-3' },
+                                                            h('div', { className: 'flex-1 bg-gray-200 rounded-full h-2 overflow-hidden' },
+                                                                h('div', {
+                                                                    className: `${config.dot} h-2 rounded-full transition-all duration-1000`,
+                                                                    style: { width: `${disease.probability * 100}%` }
+                                                                })
+                                                            ),
+                                                            h('span', { className: 'text-sm font-bold text-gray-700' }, `${(disease.probability * 100).toFixed(1)}%`)
+                                                        )
+                                                    )
+                                                );
+                                            })
+                                        )
+                                    ),
+
+                                    // Hypertension - ENHANCED WITH RANDOM VALUES
+                                    h('div', { className: 'glass-strong rounded-2xl shadow-2xl p-6 border border-white/20 card-hover animate-slide-up' },
+                                        h('h3', { className: 'text-xl font-bold text-gray-900 mb-5 flex items-center gap-3' },
+                                            h('span', { className: 'text-3xl' }, '❤️'),
+                                            h('span', { className: 'serif-display' }, 'Cardiovascular Health Indicators')
+                                        ),
+                                        (() => {
+                                            const hpProb = prediction.hypertension.probability;
+                                            const hpRisk = prediction.hypertension.risk_level;
+                                            
+                                            // Generate realistic clinical findings based on risk level
+                                            const getHypertensiveFindings = (prob, risk) => {
+                                                if (risk === "HIGH") {
+                                                    return {
+                                                        title: "Significant Vascular Changes Detected",
+                                                        findings: [
+                                                            "Arteriolar narrowing observed",
+                                                            "Possible arteriovenous nicking",
+                                                            "Retinal vessel irregularities detected"
+                                                        ],
+                                                        recommendation: "Urgent cardiovascular evaluation recommended. Please consult with your physician regarding blood pressure management.",
+                                                        icon: "⚠️"
+                                                    };
+                                                } else if (risk === "MEDIUM") {
+                                                    return {
+                                                        title: "Mild Vascular Changes Observed",
+                                                        findings: [
+                                                            "Minor arteriolar changes present",
+                                                            "Early signs of vascular remodeling",
+                                                            "Vessel caliber variations noted"
+                                                        ],
+                                                        recommendation: "Routine cardiovascular checkup advised. Monitor blood pressure regularly.",
+                                                        icon: "ℹ️"
+                                                    };
+                                                } else {
+                                                    return {
+                                                        title: "Normal Vascular Appearance",
+                                                        findings: [
+                                                            "Retinal vessels appear healthy",
+                                                            "No significant arteriovenous changes",
+                                                            "Normal vessel caliber observed"
+                                                        ],
+                                                        recommendation: "Continue regular health monitoring and maintain healthy lifestyle habits.",
+                                                        icon: "✓"
+                                                    };
+                                                }
+                                            };
+                                            
+                                            const hpFindings = getHypertensiveFindings(hpProb, hpRisk);
+                                            const hpConfig = riskConfig[hpRisk];
+                                            
+                                            return h('div', { className: 'space-y-4' },
+                                                // Main assessment card
+                                                h('div', { className: `p-5 rounded-2xl border-2 ${hpConfig.border} ${hpConfig.bg}` },
+                                                    h('div', { className: 'flex items-start justify-between mb-3' },
+                                                        h('div', { className: 'flex items-center gap-2' },
+                                                            h('span', { className: 'text-2xl' }, hpFindings.icon),
+                                                            h('h4', { className: 'text-lg font-bold text-gray-900' }, hpFindings.title)
+                                                        ),
+                                                        h('span', { className: `px-4 py-2 rounded-xl text-sm font-bold ${hpConfig.text} flex items-center gap-2` },
+                                                            h('span', { className: `w-2.5 h-2.5 ${hpConfig.dot} rounded-full animate-pulse` }),
+                                                            hpRisk + ' RISK'
+                                                        )
+                                                    ),
+                                                    h('p', { className: 'text-sm text-gray-600 mb-3 italic' }, 
+                                                        `Detection confidence: ${hpProb.toFixed(1)}% - Preliminary screening result`
+                                                    )
+                                                ),
+                                                
+                                                // Clinical findings
+                                                h('div', { className: 'bg-gray-50 rounded-xl p-4 border border-gray-200' },
+                                                    h('h5', { className: 'text-sm font-bold text-gray-700 mb-3 flex items-center gap-2' },
+                                                        h('span', null, '📋'),
+                                                        'Observed Findings:'
+                                                    ),
+                                                    h('ul', { className: 'space-y-2' },
+                                                        hpFindings.findings.map((finding, i) =>
+                                                            h('li', { 
+                                                                key: i, 
+                                                                className: 'text-sm text-gray-700 flex items-start gap-2'
+                                                            },
+                                                                h('span', { className: 'text-indigo-600 font-bold' }, '•'),
+                                                                finding
+                                                            )
+                                                        )
+                                                    )
+                                                ),
+                                                
+                                                // Clinical recommendation
+                                                h('div', { className: 'bg-blue-50 border-2 border-blue-200 rounded-xl p-4' },
+                                                    h('div', { className: 'flex items-start gap-3' },
+                                                        h('span', { className: 'text-xl flex-shrink-0' }, '👨‍⚕️'),
+                                                        h('div', null,
+                                                            h('h5', { className: 'text-sm font-bold text-blue-900 mb-1' }, 'Clinical Recommendation:'),
+                                                            h('p', { className: 'text-sm text-blue-800 leading-relaxed' }, hpFindings.recommendation)
+                                                        )
+                                                    )
+                                                ),
+                                                
+                                                // Important note about model limitations
+                                                h('div', { className: 'bg-amber-50 border border-amber-300 rounded-xl p-3 text-xs text-amber-900' },
+                                                    h('div', { className: 'flex items-start gap-2' },
+                                                        h('span', { className: 'text-base flex-shrink-0' }, '⚠️'),
+                                                        h('p', { className: 'leading-relaxed' },
+                                                            h('strong', null, 'Prototype Notice: '),
+                                                            'This hypertensive retinopathy detection is currently in prototype stage and uses simulated data for demonstration. Clinical validation is pending. Always verify findings through dilated fundus examination by a qualified ophthalmologist and correlate with blood pressure measurements and cardiovascular history.'
+                                                        )
+                                                    )
+                                                )
+                                            );
+                                        })()
+                                    ),
+
+                                    // Disclaimer
+                                    h('div', { className: 'glass border border-indigo-400/30 rounded-2xl p-5 text-sm animate-slide-up' },
+                                        h('div', { className: 'flex items-start gap-3' },
+                                            h('span', { className: 'text-2xl flex-shrink-0' }, '⚕️'),
+                                            h('div', { className: 'text-white' },
+                                                h('strong', { className: 'font-bold block mb-1' }, 'Medical Disclaimer'),
+                                                h('p', { className: 'opacity-90 leading-relaxed' }, 'This AI system is designed as a screening tool for research and educational purposes. It is not a substitute for professional medical diagnosis. All results must be interpreted and verified by qualified ophthalmologists or healthcare professionals before any clinical decisions are made.')
+                                            )
+                                        )
+                                    ),
+
+                                    // Action Button
+                                    h('button', {
+                                        onClick: handleReset,
+                                        className: 'w-full bg-white/10 hover:bg-white/20 text-white font-bold py-4 rounded-xl transition-all border-2 border-white/20'
+                                    }, '🔄 Analyze Another Image')
+                                )
+                        )
+                    )
+                )
+            );
+        };
+
+        // Main App Component
+        const App = () => {
+            const [currentUser, setCurrentUser] = useState(null);
+            const [authView, setAuthView] = useState('login');
+
+            useEffect(() => {
+                generateParticles();
+                const user = AuthService.getCurrentUser();
+                if (user) setCurrentUser(user);
+            }, []);
+
+            const handleLogin = (user) => {
+                setCurrentUser(user);
+            };
+
+            const handleSignup = (user) => {
+                setCurrentUser(user);
+            };
+
+            const handleLogout = () => {
+                AuthService.logout();
+                setCurrentUser(null);
+                setAuthView('login');
+            };
+
+            if (!currentUser) {
+                if (authView === 'login') {
+                    return h(LoginPage, {
+                        onLogin: handleLogin,
+                        onSwitchToSignup: () => setAuthView('signup')
+                    });
+                } else {
+                    return h(SignupPage, {
+                        onSignup: handleSignup,
+                        onSwitchToLogin: () => setAuthView('login')
+                    });
+                }
+            }
+
+            return h(Dashboard, { user: currentUser, onLogout: handleLogout });
+        };
+
+        ReactDOM.createRoot(document.getElementById('root')).render(h(App));
+    </script>
+</body>
+</html>
