@@ -45,15 +45,21 @@ def channel_attention(input_feature, ratio=8):
 # ======================================================
 # MODEL PATHS
 # ======================================================
-DR_MB_PATH = "multibranch_model_1.h5"
-DR_CNN_PATH = "cnn_model_1.h5"
-OCULAR_PATH = "hybrid_efficientnetb4_model.keras"
-HP_PATH = "final_hypertension_model.h5"
+DR_MB_PATH = "models/multibranch_model_1.h5"
+DR_CNN_PATH = "models/cnn_model_1.h5"
+OCULAR_PATH = "models/hybrid_efficientnetb4_model.keras"
+HP_PATH = "models/final_hypertension_model.h5"
 
 # ======================================================
 # LOAD MODELS
 # ======================================================
 print("🔄 Loading AI models...")
+MODELS_LOADED = False
+dr_mb = None
+dr_cnn = None
+ocular_model = None
+hp_model = None
+
 try:
     dr_mb = tf.keras.models.load_model(DR_MB_PATH, compile=False)
     print("✅ Diabetic Retinopathy MultiBranch model loaded")
@@ -67,10 +73,13 @@ try:
     hp_model = tf.keras.models.load_model(HP_PATH, compile=False)
     print("✅ Hypertension model loaded")
     
+    MODELS_LOADED = True
     print("\n✅ All models loaded successfully!\n")
 except Exception as e:
-    print(f"❌ Error loading models: {str(e)}")
-    print("⚠️  Please ensure all model files are in the same directory as app.py\n")
+    print(f"⚠️  Models not found: {str(e)}")
+    print("🔄 Running in DEMO MODE with simulated predictions")
+    print("📝 For production, ensure model files are in the 'models/' folder\n")
+    MODELS_LOADED = False
 
 # ======================================================
 # CLASS LABELS
@@ -136,6 +145,37 @@ def risk_level(p):
         return "LOW"
 
 # ======================================================
+# MOCK PREDICTION FUNCTIONS (FOR DEMO MODE)
+# ======================================================
+def generate_mock_dr_prediction():
+    """Generate realistic mock DR prediction"""
+    stages = ["No DR", "Mild", "Moderate", "Severe", "Proliferative DR"]
+    # Weighted random selection (more common stages have higher probability)
+    weights = [0.4, 0.3, 0.2, 0.07, 0.03]
+    stage_idx = np.random.choice(len(stages), p=weights)
+    
+    # Generate probabilities that sum to 1
+    probs = np.random.dirichlet(np.ones(5) * 0.5)
+    # Make the selected stage have highest probability
+    probs[stage_idx] += 0.5
+    probs = probs / probs.sum()
+    
+    return stage_idx, probs
+
+def generate_mock_ocular_prediction():
+    """Generate realistic mock ocular disease prediction"""
+    # Typically one disease dominates, others are low
+    dominant_idx = np.random.randint(0, 4)
+    probs = np.random.uniform(0.05, 0.15, 4)
+    probs[dominant_idx] = np.random.uniform(0.6, 0.9)
+    probs = probs / probs.sum()
+    return probs
+
+def generate_mock_hp_prediction():
+    """Generate realistic mock hypertension prediction"""
+    return np.random.uniform(0.1, 0.9)
+
+# ======================================================
 # UTILITY FUNCTIONS
 # ======================================================
 def save_analysis_result(user_id, result_data):
@@ -176,7 +216,8 @@ def health_check():
     return jsonify({
         'status': 'healthy',
         'timestamp': datetime.now().isoformat(),
-        'models_loaded': True
+        'models_loaded': MODELS_LOADED,
+        'demo_mode': not MODELS_LOADED
     })
 
 @app.route('/api/user/history/<user_id>', methods=['GET'])
@@ -218,19 +259,44 @@ def predict():
         file.save(temp_path)
         print(f"📸 Processing image: {filename}")
         
-        # DIABETIC RETINOPATHY PREDICTION
-        print("🔬 Analyzing for Diabetic Retinopathy...")
-        dr_img = preprocess_dr(temp_path)
-        mb_probs = dr_mb.predict(dr_img, verbose=0)[0]
-        cnn_probs = dr_cnn.predict(dr_img, verbose=0)[0]
-        dr_probs = 0.7 * mb_probs + 0.3 * cnn_probs
-        dr_class = int(np.argmax(dr_probs))
-        dr_conf = float(dr_probs[dr_class])
+        if MODELS_LOADED:
+            # REAL MODEL PREDICTIONS
+            # DIABETIC RETINOPATHY PREDICTION
+            print("🔬 Analyzing for Diabetic Retinopathy...")
+            dr_img = preprocess_dr(temp_path)
+            mb_probs = dr_mb.predict(dr_img, verbose=0)[0]
+            cnn_probs = dr_cnn.predict(dr_img, verbose=0)[0]
+            dr_probs = 0.7 * mb_probs + 0.3 * cnn_probs
+            dr_class = int(np.argmax(dr_probs))
+            dr_conf = float(dr_probs[dr_class])
+            
+            # OCULAR DISEASE PREDICTION
+            print("👁️  Screening for Ocular Diseases...")
+            ocular_img = preprocess_ocular(temp_path)
+            ocular_probs = ocular_model.predict(ocular_img, verbose=0)[0]
+            
+            # HYPERTENSION PREDICTION
+            print("❤️  Detecting Hypertensive Changes...")
+            hp_img = preprocess_hp(temp_path)
+            hp_prob = float(hp_model.predict(hp_img, verbose=0)[0][0])
+        else:
+            # DEMO MODE - MOCK PREDICTIONS
+            print("🎭 Generating demo predictions (models not loaded)...")
+            import time
+            time.sleep(2)  # Simulate processing time
+            
+            # Mock DR prediction
+            dr_class, dr_probs_array = generate_mock_dr_prediction()
+            dr_conf = float(dr_probs_array[dr_class])
+            dr_probs = dr_probs_array
+            
+            # Mock Ocular prediction
+            ocular_probs = generate_mock_ocular_prediction()
+            
+            # Mock Hypertension prediction
+            hp_prob = generate_mock_hp_prediction()
         
-        # OCULAR DISEASE PREDICTION
-        print("👁️  Screening for Ocular Diseases...")
-        ocular_img = preprocess_ocular(temp_path)
-        ocular_probs = ocular_model.predict(ocular_img, verbose=0)[0]
+        # Process results (same for both real and mock)
         ocular_results = [
             {
                 "disease": cls,
@@ -240,10 +306,6 @@ def predict():
             for cls, prob in zip(OCULAR_CLASSES, ocular_probs)
         ]
         
-        # HYPERTENSION PREDICTION
-        print("❤️  Detecting Hypertensive Changes...")
-        hp_img = preprocess_hp(temp_path)
-        hp_prob = float(hp_model.predict(hp_img, verbose=0)[0][0])
         hp_risk = risk_level(hp_prob)
         
         # Compile results
@@ -264,7 +326,8 @@ def predict():
             'metadata': {
                 'filename': filename,
                 'processed_at': datetime.now().isoformat(),
-                'user_id': user_id
+                'user_id': user_id,
+                'demo_mode': not MODELS_LOADED
             }
         }
         
@@ -305,6 +368,7 @@ if __name__ == '__main__':
     print(f"📍 Server starting at: http://localhost:5000")
     print(f"📁 Upload folder: {UPLOAD_FOLDER}")
     print(f"📊 Results folder: {RESULTS_FOLDER}")
+    print(f"🤖 Demo mode: {not MODELS_LOADED}")
     print("="*60 + "\n")
     
     app.run(debug=True, port=5000, host='0.0.0.0')

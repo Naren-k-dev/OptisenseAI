@@ -8,7 +8,7 @@
     <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
     <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
     <script src="https://cdn.tailwindcss.com?v=3.4.1"></script>
-    <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=Work+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=Work+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <style>
         * { 
             font-family: 'Work Sans', -apple-system, BlinkMacSystemFont, sans-serif;
@@ -28,7 +28,6 @@
             font-family: 'DM Serif Display', serif;
         }
 
-        /* Animated gradient background */
         .animated-gradient {
             background: linear-gradient(-45deg, #0f172a, #1e1b4b, #1e3a5f, #0f172a);
             background-size: 400% 400%;
@@ -41,7 +40,6 @@
             100% { background-position: 0% 50%; }
         }
 
-        /* Floating particles effect */
         .particles {
             position: fixed;
             top: 0;
@@ -69,15 +67,9 @@
             100% { transform: translateY(-10vh) translateX(50px); opacity: 0; }
         }
 
-        /* Slide animations */
         @keyframes slideUp {
             from { opacity: 0; transform: translateY(30px); }
             to { opacity: 1; transform: translateY(0); }
-        }
-
-        @keyframes slideInLeft {
-            from { opacity: 0; transform: translateX(-30px); }
-            to { opacity: 1; transform: translateX(0); }
         }
 
         @keyframes fadeIn {
@@ -91,11 +83,9 @@
         }
 
         .animate-slide-up { animation: slideUp 0.6s cubic-bezier(0.16, 1, 0.3, 1); }
-        .animate-slide-left { animation: slideInLeft 0.6s cubic-bezier(0.16, 1, 0.3, 1); }
         .animate-fade-in { animation: fadeIn 0.8s ease-out; }
         .animate-scale-in { animation: scaleIn 0.5s cubic-bezier(0.16, 1, 0.3, 1); }
 
-        /* Glass morphism effect */
         .glass {
             background: rgba(255, 255, 255, 0.05);
             backdrop-filter: blur(20px);
@@ -108,38 +98,12 @@
             border: 1px solid rgba(255, 255, 255, 0.2);
         }
 
-        /* Medical grid pattern */
-        .medical-grid {
-            background-image: 
-                linear-gradient(rgba(99, 102, 241, 0.03) 1px, transparent 1px),
-                linear-gradient(90deg, rgba(99, 102, 241, 0.03) 1px, transparent 1px);
-            background-size: 30px 30px;
-        }
-
-        /* Custom scrollbar */
-        ::-webkit-scrollbar { width: 10px; }
-        ::-webkit-scrollbar-track { background: #1e293b; }
-        ::-webkit-scrollbar-thumb { background: #4f46e5; border-radius: 5px; }
-        ::-webkit-scrollbar-thumb:hover { background: #6366f1; }
-
-        /* Pulse animation for loading */
-        @keyframes pulse {
-            0%, 100% { opacity: 1; }
-            50% { opacity: 0.5; }
-        }
-
-        .animate-pulse-slow {
-            animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
-        }
-
-        /* Input focus effects */
         .input-field:focus {
             outline: none;
             border-color: #6366f1;
             box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
         }
 
-        /* Button hover effects */
         .btn-primary {
             transition: all 0.3s ease;
         }
@@ -149,7 +113,6 @@
             box-shadow: 0 10px 25px rgba(99, 102, 241, 0.3);
         }
 
-        /* Card hover effects */
         .card-hover {
             transition: all 0.3s ease;
         }
@@ -158,18 +121,21 @@
             transform: translateY(-5px);
             box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
         }
+
+        ::-webkit-scrollbar { width: 10px; }
+        ::-webkit-scrollbar-track { background: #1e293b; }
+        ::-webkit-scrollbar-thumb { background: #4f46e5; border-radius: 5px; }
+        ::-webkit-scrollbar-thumb:hover { background: #6366f1; }
     </style>
 </head>
 <body class="animated-gradient">
-    <!-- Floating particles background -->
     <div class="particles" id="particles"></div>
-    
     <div id="root"></div>
     
     <script>
         const { useState, useEffect, createElement: h } = React;
 
-        // Generate floating particles
+        // Generate particles
         const generateParticles = () => {
             const container = document.getElementById('particles');
             if (!container) return;
@@ -183,7 +149,7 @@
             }
         };
 
-        // User authentication utilities
+        // Auth Service
         const AuthService = {
             login: (email, password) => {
                 const users = JSON.parse(localStorage.getItem('users') || '[]');
@@ -194,7 +160,7 @@
                     localStorage.setItem('currentUser', JSON.stringify(userData));
                     return { success: true, user: userData };
                 }
-                return { success: false, error: 'Invalid credentials' };
+                return { success: false, error: 'Invalid email or password' };
             },
             
             signup: (name, email, password) => {
@@ -221,7 +187,7 @@
             }
         };
 
-        // Login Component
+        // Login Page
         const LoginPage = ({ onLogin, onSwitchToSignup }) => {
             const [email, setEmail] = useState('');
             const [password, setPassword] = useState('');
@@ -307,7 +273,7 @@
             );
         };
 
-        // Signup Component
+        // Signup Page
         const SignupPage = ({ onSignup, onSwitchToLogin }) => {
             const [name, setName] = useState('');
             const [email, setEmail] = useState('');
@@ -429,7 +395,7 @@
             );
         };
 
-        // Main Dashboard Component
+        // Dashboard Component
         const Dashboard = ({ user, onLogout }) => {
             const [selectedImage, setSelectedImage] = useState(null);
             const [imagePreview, setImagePreview] = useState(null);
@@ -481,26 +447,6 @@
                     if (!response.ok) throw new Error('Analysis failed');
                     
                     const data = await response.json();
-                    
-                    // GENERATE RANDOM HYPERTENSION VALUES FOR PROTOTYPE
-                    // Since the hypertension model is not good, we generate realistic random values
-                    const randomHpProb = Math.random() * 100; // 0-100%
-                    let randomHpRisk;
-                    
-                    if (randomHpProb >= 60) {
-                        randomHpRisk = "HIGH";
-                    } else if (randomHpProb >= 30) {
-                        randomHpRisk = "MEDIUM";
-                    } else {
-                        randomHpRisk = "LOW";
-                    }
-                    
-                    // Override hypertension data with random values
-                    data.hypertension = {
-                        risk_level: randomHpRisk,
-                        probability: randomHpProb
-                    };
-                    
                     setPrediction(data);
                 } catch (err) {
                     setError(err.message);
@@ -601,7 +547,7 @@
                         // Results Section
                         h('div', { className: 'lg:col-span-2 space-y-6' },
                             !prediction ?
-                                h('div', { className: 'glass-strong rounded-2xl shadow-2xl p-16 text-center border border-white/20 medical-grid' },
+                                h('div', { className: 'glass-strong rounded-2xl shadow-2xl p-16 text-center border border-white/20' },
                                     h('div', { className: 'max-w-md mx-auto' },
                                         h('div', { className: 'w-24 h-24 bg-gradient-to-br from-indigo-100 to-purple-100 rounded-3xl flex items-center justify-center mx-auto mb-6' },
                                             h('svg', { className: 'w-14 h-14 text-indigo-600', fill: 'none', stroke: 'currentColor', viewBox: '0 0 24 24' },
@@ -609,7 +555,7 @@
                                             )
                                         ),
                                         h('h3', { className: 'text-2xl font-bold text-gray-900 serif-display mb-3' }, 'Ready for Analysis'),
-                                        h('p', { className: 'text-gray-600 leading-relaxed' }, 'Upload a retinal fundus image to receive comprehensive AI-powered diagnostic insights including diabetic retinopathy staging, ocular disease screening, and hypertensive changes detection.')
+                                        h('p', { className: 'text-gray-600 leading-relaxed' }, 'Upload a retinal fundus image to receive comprehensive AI-powered diagnostic insights.')
                                     )
                                 )
                             :
@@ -651,7 +597,6 @@
                                                 return h('div', {
                                                     key: i,
                                                     className: `p-5 rounded-xl border-2 ${config.border} ${config.bg} transition-all hover:scale-105`,
-                                                    style: { animationDelay: `${i * 0.1}s` }
                                                 },
                                                     h('div', { className: 'flex items-start justify-between mb-3' },
                                                         h('h4', { className: 'font-bold text-gray-900 text-lg' }, disease.disease),
@@ -677,7 +622,7 @@
                                         )
                                     ),
 
-                                    // Hypertension - ENHANCED WITH RANDOM VALUES
+                                    // Hypertension - ENHANCED
                                     h('div', { className: 'glass-strong rounded-2xl shadow-2xl p-6 border border-white/20 card-hover animate-slide-up' },
                                         h('h3', { className: 'text-xl font-bold text-gray-900 mb-5 flex items-center gap-3' },
                                             h('span', { className: 'text-3xl' }, '❤️'),
@@ -687,7 +632,6 @@
                                             const hpProb = prediction.hypertension.probability;
                                             const hpRisk = prediction.hypertension.risk_level;
                                             
-                                            // Generate realistic clinical findings based on risk level
                                             const getHypertensiveFindings = (prob, risk) => {
                                                 if (risk === "HIGH") {
                                                     return {
@@ -729,7 +673,6 @@
                                             const hpConfig = riskConfig[hpRisk];
                                             
                                             return h('div', { className: 'space-y-4' },
-                                                // Main assessment card
                                                 h('div', { className: `p-5 rounded-2xl border-2 ${hpConfig.border} ${hpConfig.bg}` },
                                                     h('div', { className: 'flex items-start justify-between mb-3' },
                                                         h('div', { className: 'flex items-center gap-2' },
@@ -746,7 +689,6 @@
                                                     )
                                                 ),
                                                 
-                                                // Clinical findings
                                                 h('div', { className: 'bg-gray-50 rounded-xl p-4 border border-gray-200' },
                                                     h('h5', { className: 'text-sm font-bold text-gray-700 mb-3 flex items-center gap-2' },
                                                         h('span', null, '📋'),
@@ -765,7 +707,6 @@
                                                     )
                                                 ),
                                                 
-                                                // Clinical recommendation
                                                 h('div', { className: 'bg-blue-50 border-2 border-blue-200 rounded-xl p-4' },
                                                     h('div', { className: 'flex items-start gap-3' },
                                                         h('span', { className: 'text-xl flex-shrink-0' }, '👨‍⚕️'),
@@ -776,32 +717,30 @@
                                                     )
                                                 ),
                                                 
-                                                // Important note about model limitations
-                                                h('div', { className: 'bg-amber-50 border border-amber-300 rounded-xl p-3 text-xs text-amber-900' },
-                                                    h('div', { className: 'flex items-start gap-2' },
-                                                        h('span', { className: 'text-base flex-shrink-0' }, '⚠️'),
-                                                        h('p', { className: 'leading-relaxed' },
-                                                            h('strong', null, 'Prototype Notice: '),
-                                                            'This hypertensive retinopathy detection is currently in prototype stage and uses simulated data for demonstration. Clinical validation is pending. Always verify findings through dilated fundus examination by a qualified ophthalmologist and correlate with blood pressure measurements and cardiovascular history.'
+                                                prediction.metadata && prediction.metadata.demo_mode && 
+                                                    h('div', { className: 'bg-amber-50 border border-amber-300 rounded-xl p-3 text-xs text-amber-900' },
+                                                        h('div', { className: 'flex items-start gap-2' },
+                                                            h('span', { className: 'text-base flex-shrink-0' }, '⚠️'),
+                                                            h('p', { className: 'leading-relaxed' },
+                                                                h('strong', null, 'Demo Mode: '),
+                                                                'This analysis uses simulated data for demonstration. For production use, ensure AI model files are properly loaded.'
+                                                            )
                                                         )
                                                     )
-                                                )
                                             );
                                         })()
                                     ),
 
-                                    // Disclaimer
                                     h('div', { className: 'glass border border-indigo-400/30 rounded-2xl p-5 text-sm animate-slide-up' },
                                         h('div', { className: 'flex items-start gap-3' },
                                             h('span', { className: 'text-2xl flex-shrink-0' }, '⚕️'),
                                             h('div', { className: 'text-white' },
                                                 h('strong', { className: 'font-bold block mb-1' }, 'Medical Disclaimer'),
-                                                h('p', { className: 'opacity-90 leading-relaxed' }, 'This AI system is designed as a screening tool for research and educational purposes. It is not a substitute for professional medical diagnosis. All results must be interpreted and verified by qualified ophthalmologists or healthcare professionals before any clinical decisions are made.')
+                                                h('p', { className: 'opacity-90 leading-relaxed' }, 'This AI system is for screening and research purposes. All results must be verified by qualified ophthalmologists before any clinical decisions.')
                                             )
                                         )
                                     ),
 
-                                    // Action Button
                                     h('button', {
                                         onClick: handleReset,
                                         className: 'w-full bg-white/10 hover:bg-white/20 text-white font-bold py-4 rounded-xl transition-all border-2 border-white/20'
@@ -813,7 +752,7 @@
             );
         };
 
-        // Main App Component
+        // Main App
         const App = () => {
             const [currentUser, setCurrentUser] = useState(null);
             const [authView, setAuthView] = useState('login');
